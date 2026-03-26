@@ -8,6 +8,45 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Auth View (Hidden by default or shown if not logged in) -->
+  <div id="auth-view" class="hidden-auth">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <svg viewBox="0 0 24 24" fill="none" class="sparkle-icon" style="width: 28px; height: 28px;">
+            <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="var(--primary)"/>
+          </svg>
+        </div>
+        <h2>Aurora.ai</h2>
+        <p id="auth-subtitle">Welcome back! Please login to your account.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="toggleAuthMode('login')">Login</div>
+        <div class="auth-tab" id="tab-signup" onclick="toggleAuthMode('signup')">Sign Up</div>
+      </div>
+
+      <div class="auth-form">
+        <div class="auth-input-group hidden-auth" id="group-name">
+          <label>Full Name</label>
+          <input type="text" id="auth-name" placeholder="Enter your name" />
+        </div>
+        <div class="auth-input-group">
+          <label>Email Address</label>
+          <input type="email" id="auth-email" placeholder="name@example.com" />
+        </div>
+        <div class="auth-input-group">
+          <label>Password</label>
+          <input type="password" id="auth-pass" placeholder="••••••••" />
+        </div>
+        <button class="btn btn-auth" id="btn-auth-submit" onclick="handleAuthSubmit()">Login</button>
+      </div>
+
+      <div class="auth-footer">
+        <p id="auth-footer-text">Secure access to your legal intelligence</p>
+      </div>
+    </div>
+  </div>
   
   <div class="app-layout">
     <!-- Sidebar -->
@@ -41,6 +80,10 @@
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             Document Library
           </li>
+          <li class="nav-item" data-target="schedules-view">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Upcoming Schedules
+          </li>
         </ul>
       </div>
 
@@ -65,13 +108,17 @@
       </div>
 
       <div class="sidebar-footer">
-        <div class="assistant-card">
+        <div class="assistant-card" style="margin-bottom: 12px;">
           <div class="assistant-avatar">AI</div>
           <div class="assistant-info">
-            <h5>Legal AI Assistant</h5>
+            <h5 id="user-display-name">Legal AI Assistant</h5>
             <span>Ready to analyze documents</span>
           </div>
         </div>
+        <button class="btn outline" style="width: 100%; border-color: rgba(238, 93, 80, 0.3); color: var(--accent-red); padding: 10px;" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; margin-right: 8px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Logout
+        </button>
       </div>
     </aside>
 
@@ -162,7 +209,7 @@
           <div class="panel recent-docs-panel">
             <div class="panel-header">
               <h3>Recent Documents</h3>
-              <button class="btn btn-small outline">View All</button>
+              <button class="btn btn-small outline" onclick="switchView('library-view')">View All</button>
             </div>
             <div class="doc-list" id="dashboard-recent-docs">
               <!-- Real documents will be injected here -->
@@ -190,7 +237,7 @@
             
           <!-- Deadline Reminders Widget -->
           <div class="panel reminder-widget" id="dashboard-reminders">
-            <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Upcoming Deadlines</h4>
+            <h4>Upcoming Deadlines</h4>
             <div id="reminder-list">
               <!-- Reminders injected via JS -->
                <div style="font-size:0.85rem; color:var(--text-light); text-align:center; padding: 10px 0;">No deadlines found</div>
@@ -265,8 +312,25 @@
             <input type="text" placeholder="Search documents..." id="lib-search" />
           </div>
           <div class="filter-actions-group">
-            <button class="filter-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> All Status <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-            <button class="filter-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> All Risk <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div class="filter-select-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              <select id="lib-status-filter" class="filter-select">
+                <option value="all">All Status</option>
+                <option value="upcoming">Has Deadline</option>
+                <option value="expired">Expired</option>
+                <option value="none">No Deadline</option>
+              </select>
+            </div>
+            <div class="filter-select-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <select id="lib-risk-filter" class="filter-select">
+                <option value="all">All Risk</option>
+                <option value="low">Low Risk</option>
+                <option value="medium">Medium Risk</option>
+                <option value="high">High Risk</option>
+              </select>
+            </div>
+            <button class="btn btn-small outline" style="border-color: #ff4d4d; color: #ff4d4d;" onclick="clearHistory()">Clear History</button>
           </div>
         </div>
 
@@ -329,6 +393,25 @@
               <div class="pm-step-spinner hidden" id="spinner-3"><div class="mini-spin green"></div></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Schedules View -->
+      <div id="schedules-view" class="view-section hidden">
+        <div class="view-header">
+          <div class="header-main">
+            <h1>Upcoming Schedules & Deadlines</h1>
+            <p>Track and manage important dates from your analyzed documents.</p>
+          </div>
+          <div class="header-actions" style="display: flex; gap: 12px;">
+            <button class="btn outline" id="settings-btn" style="display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Settings
+            </button>
+          </div>
+        </div>
+        <div class="schedules-grid" id="schedules-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px;">
+           <!-- JS will populate -->
         </div>
       </div>
 
@@ -444,7 +527,30 @@
       </div>
 
       <!-- Generic hidden file input used anywhere -->
-      <input type="file" id="fileNode" hidden accept="application/pdf,image/*,text/plain" />
+      <input type="file" id="fileNode" hidden accept="application/pdf,image/*,text/plain,.zip" multiple />
+      
+      <!-- Batch Results Overlay -->
+      <div class="global-overlay hidden" id="batch-results-modal">
+        <div class="result-card" style="max-width: 800px; width: 90%;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--bg-color); padding-bottom: 15px;">
+            <h3 style="color: var(--primary); font-size: 1.4rem;">📊 Batch Processing Summary</h3>
+            <button class="icon-btn" onclick="document.getElementById('batch-results-modal').classList.add('hidden')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <p id="batch-stats-text" style="margin-bottom: 20px; font-weight: 500; color: var(--text-light); text-align: left;"></p>
+          <div id="batch-items-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 50vh; overflow-y: auto; padding-right: 8px;">
+            <!-- Items added dynamically -->
+          </div>
+          <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 12px; align-items: center;">
+            <button id="batch-listen-btn" class="btn outline" style="display: flex; align-items: center; gap: 8px;">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+               Listen to Summary
+            </button>
+            <div style="flex-grow: 1;"></div>
+            <button class="btn outline" onclick="document.getElementById('batch-results-modal').classList.add('hidden'); switchView('library-view');">Go to Library</button>
+            <button class="btn btn-primary" onclick="document.getElementById('batch-results-modal').classList.add('hidden')">Done</button>
+          </div>
+        </div>
+      </div>
       
       <!-- Share Modal -->
       <div class="global-overlay hidden" id="share-modal">
@@ -493,19 +599,157 @@
     </main>
   </div>
 
+  <!-- Settings Modal -->
+  <div class="global-overlay hidden" id="settings-modal">
+    <div class="overlay-box" style="max-width: 500px; padding: 24px; background: white; border-radius: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--primary); margin: 0;">Notification Settings</h3>
+        <button class="icon-btn" onclick="document.getElementById('settings-modal').classList.add('hidden')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light);">&times;</button>
+      </div>
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-main);">Your Email Address</label>
+        <input type="email" id="user-email-input" placeholder="e.g. yourname@gmail.com" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 1rem;" />
+        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 8px;">Reminders will be sent to this email when you click "Notify Me" on a document.</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button class="btn outline" onclick="document.getElementById('settings-modal').classList.add('hidden')">Cancel</button>
+        <button class="btn btn-primary" id="save-settings-btn">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Auth State
+    let authMode = 'login';
+    let currentUser = null;
+
+    function checkSession() {
+      const session = localStorage.getItem('aurora_session');
+      if (session) {
+        currentUser = JSON.parse(session);
+        document.getElementById('auth-view').classList.add('hidden-auth');
+        document.getElementById('user-display-name').textContent = currentUser.name || 'User';
+        
+        // Load user-specific document history
+        const userDocKey = `docHistory_${currentUser.email}`;
+        docHistory = JSON.parse(localStorage.getItem(userDocKey)) || [];
+
+        renderLibrary();
+        updateDashboard();
+      } else {
+        document.getElementById('auth-view').classList.remove('hidden-auth');
+      }
+    }
+
+    function toggleAuthMode(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tab-login');
+      const tabSignup = document.getElementById('tab-signup');
+      const groupName = document.getElementById('group-name');
+      const btnSubmit = document.getElementById('btn-auth-submit');
+      const subtitle = document.getElementById('auth-subtitle');
+
+      if (mode === 'signup') {
+        tabSignup.classList.add('active');
+        tabLogin.classList.remove('active');
+        groupName.classList.remove('hidden-auth');
+        btnSubmit.textContent = 'Create Account';
+        subtitle.textContent = 'Join Aurora.ai to manage your legal docs.';
+      } else {
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+        groupName.classList.add('hidden-auth');
+        btnSubmit.textContent = 'Login';
+        subtitle.textContent = 'Welcome back! Please login to your account.';
+      }
+    }
+
+    function handleAuthSubmit() {
+      const name = document.getElementById('auth-name').value;
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-pass').value;
+
+      if (!email || !pass || (authMode === 'signup' && !name)) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('aurora_users') || '[]');
+
+      if (authMode === 'signup') {
+        if (users.find(u => u.email === email)) {
+          alert('User already exists with this email');
+          return;
+        }
+        const newUser = { name, email, pass };
+        users.push(newUser);
+        localStorage.setItem('aurora_users', JSON.stringify(users));
+        loginUser(newUser);
+      } else {
+        const user = users.find(u => u.email === email && u.pass === pass);
+        if (user) {
+          loginUser(user);
+        } else {
+          alert('Invalid email or password');
+        }
+      }
+    }
+
+    function loginUser(user) {
+      localStorage.setItem('aurora_session', JSON.stringify(user));
+      currentUser = user;
+      document.getElementById('auth-view').classList.add('hidden-auth');
+      document.getElementById('user-display-name').textContent = user.name || 'User';
+      
+      // Load user-specific document history
+      const userDocKey = `docHistory_${user.email}`;
+      docHistory = JSON.parse(localStorage.getItem(userDocKey)) || [];
+      
+      renderLibrary();
+      updateDashboard();
+    }
+
+    function logout() {
+      localStorage.removeItem('aurora_session');
+      currentUser = null;
+      document.getElementById('auth-view').classList.remove('hidden-auth');
+      
+      // Reset docHistory and state
+      docHistory = [];
+      renderLibrary();
+      updateDashboard();
+      
+      // Clear forms
+      document.getElementById('auth-name').value = '';
+      document.getElementById('auth-email').value = '';
+      document.getElementById('auth-pass').value = '';
+    }
+
+    // Call checkSession on start
+    window.addEventListener('DOMContentLoaded', checkSession);
+
     // Navigation logic
     const navItems = document.querySelectorAll('.nav-item');
     const views = document.querySelectorAll('.view-section');
     const backBtn = document.getElementById('back-to-dashboard');
     
-    function switchView(targetId) {
-      if(!targetId) return;
+    function clearHistory() {
+      if (confirm('Are you sure you want to clear all document history? This cannot be undone.')) {
+        docHistory = [];
+        localStorage.removeItem('docHistory');
+        renderLibrary();
+        updateDashboard();
+        switchView('dashboard-view');
+      }
+    }
+    
+    function switchView(viewId) {
+      if(!viewId) return;
       views.forEach(v => v.classList.add('hidden'));
-      document.getElementById(targetId).classList.remove('hidden');
+      document.getElementById(viewId).classList.remove('hidden');
       
       navItems.forEach(item => {
-        if(item.dataset.target === targetId) item.classList.add('active');
+        if(item.dataset.target === viewId) item.classList.add('active');
         else item.classList.remove('active');
       });
     }
@@ -524,7 +768,174 @@
     // Middle button in landing page
     document.getElementById('analyze-main-btn').addEventListener('click', () => switchView('analyze-view'));
     
-    // Quick action card in dashboard
+    // Notification Logic
+    let userEmail = localStorage.getItem('userEmail') || '';
+    
+    document.getElementById('save-settings-btn').addEventListener('click', () => {
+      const email = document.getElementById('user-email-input').value;
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      userEmail = email;
+      localStorage.setItem('userEmail', email);
+      document.getElementById('settings-modal').classList.add('hidden');
+      alert('Settings saved!');
+    });
+
+    document.getElementById('settings-btn').addEventListener('click', () => {
+      document.getElementById('user-email-input').value = userEmail;
+      document.getElementById('settings-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('res-notify-btn')?.addEventListener('click', async () => {
+      if (!userEmail) {
+        alert('Please set your email address in Settings first!');
+        document.getElementById('settings-modal').classList.remove('hidden');
+        return;
+      }
+
+      const activeDoc = docHistory[currentViewIndex];
+      if (!activeDoc) return;
+
+      const btn = document.getElementById('res-notify-btn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Sending...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: userEmail,
+            docTitle: activeDoc.title,
+            dueDate: activeDoc.due_date || 'N/A'
+          })
+        });
+
+        if (response.ok) {
+          alert('Notification sent!');
+        } else {
+          alert('Failed to send notification.');
+        }
+      } catch (err) {
+        alert('Error connecting to notification service.');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    function renderSchedules() {
+      const grid = document.getElementById('schedules-grid');
+      if (!grid) return;
+      
+      const docsWithDeadlines = docHistory.filter(d => d.due_date);
+      
+      if (docsWithDeadlines.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; padding: 60px 40px; text-align: center; background: white; border-radius: 20px; border: 1px solid var(--border-light); display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-top: 10px; animation: fadeIn 0.4s ease-out;">
+            <div style="width: 56px; height: 56px; background: rgba(74, 114, 255, 0.08); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 4px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 26px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div>
+              <h3 style="margin: 0 0 6px 0; color: var(--text-main); font-size: 1.25rem; font-weight: 700;">No Deadlines Found</h3>
+              <p style="color: var(--text-light); font-size: 0.95rem; max-width: 380px; margin: 0 auto; line-height: 1.5;">When you analyze documents with due dates, they will appear here with automated reminders and urgency tracking.</p>
+            </div>
+            <button class="btn btn-primary" onclick="switchView('analyze-view')" style="padding: 10px 24px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+               Extract First Deadline
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort by date (nearest first)
+      docsWithDeadlines.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+
+      grid.innerHTML = docsWithDeadlines.map((doc, idx) => {
+        const dueDate = new Date(doc.due_date);
+        const now = new Date();
+        now.setHours(0,0,0,0);
+        
+        const diffTime = dueDate - now;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let status = 'Upcoming';
+        let statusClass = 'badge-low';
+        let accentColor = '#10b981'; // Green
+        
+        if (diffDays < 0) {
+          status = 'Overdue';
+          statusClass = 'badge-high';
+          accentColor = '#ef4444'; // Red
+        } else if (diffDays === 0) {
+          status = 'Due Today';
+          statusClass = 'badge-high'; // Using red or orange
+          accentColor = '#f59e0b'; // Amber
+        } else if (diffDays <= 7) {
+          status = 'Due Soon';
+          statusClass = 'badge-med';
+          accentColor = '#f59e0b';
+        }
+
+        return `
+          <div class="stat-card" style="flex-direction: column; align-items: flex-start; gap: 0; padding: 0; overflow: hidden; position: relative; border-top: 4px solid ${accentColor}; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--shadow-sm)'">
+            <div style="padding: 24px; width: 100%;">
+              <div style="display: flex; justify-content: space-between; width: 100%; align-items: flex-start; margin-bottom: 20px;">
+                <div style="background: ${accentColor}15; padding: 12px; border-radius: 14px; color: ${accentColor};">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                  <span class="lib-badge ${statusClass}" style="margin:0; font-weight: 700; background: ${accentColor}; color: white; border: none; padding: 4px 12px;">${status.toUpperCase()}</span>
+                  ${diffDays >= 0 ? `<span style="font-size: 0.75rem; font-weight: 600; color: ${accentColor};">${diffDays === 0 ? 'Action needed today' : diffDays + ' days remaining'}</span>` : `<span style="font-size: 0.75rem; font-weight: 600; color: #ef4444;">Delayed by ${Math.abs(diffDays)} days</span>`}
+                </div>
+              </div>
+              
+              <h3 style="margin: 0 0 12px 0; font-size: 1.2rem; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${doc.title}</h3>
+              
+              <div style="display: flex; items: center; gap: 8px; margin-bottom: 20px;">
+                 <div style="width: 8px; height: 8px; border-radius: 50%; background: ${accentColor};"></div>
+                 <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px;">${doc.documentType}</span>
+              </div>
+
+              <div style="background: var(--bg-color); border-radius: 12px; padding: 12px 16px; margin-bottom: 24px; border-left: 3px solid ${accentColor};">
+                <span style="display: block; font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px;">DEADLINE</span>
+                <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">${new Date(doc.due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 16px;">
+                 <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 0.7rem; color: var(--text-light);">PROCESSED ON</span>
+                    <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-main);">${doc.date}</span>
+                 </div>
+                 <div style="display: flex; gap: 8px; align-items: center;">
+                   <a href="${buildGCalURL(doc.title, doc.due_date, doc.summary)}" target="_blank" class="gcal-btn" title="Add to Google Calendar">
+                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                     Google Calendar
+                   </a>
+                   <button class="btn btn-small outline" onclick="viewDocumentByTitle('${doc.title}')" style="border-radius: 10px; padding: 8px 16px; font-weight: 600;">Open Analysis</button>
+                 </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Add renderSchedules call to switchView if target is schedules-view
+    const originalSwitchView = switchView;
+    switchView = function(viewId) {
+      originalSwitchView(viewId);
+      if (viewId === 'schedules-view') renderSchedules();
+    };
+
+    function viewDocumentByTitle(title) {
+      const idx = docHistory.findIndex(d => d.title === title);
+      if (idx !== -1) viewDocument(idx);
+    }
     const quickActionCard = document.querySelector('.quick-actions-panel .drop-trigger');
     if (quickActionCard) {
       quickActionCard.addEventListener('click', () => switchView('analyze-view'));
@@ -545,19 +956,19 @@
       t.addEventListener('drop', (e) => {
         e.preventDefault();
         t.classList.remove('drag-hover');
-        if (e.dataTransfer.files.length) handleUpload(e.dataTransfer.files[0]);
+        if (e.dataTransfer.files.length) handleBulkUpload(e.dataTransfer.files);
       });
     });
 
     fileNode.addEventListener('change', (e) => {
-      if (e.target.files.length) handleUpload(e.target.files[0]);
+      if (e.target.files.length) handleBulkUpload(e.target.files);
     });
 
 
 
     document.getElementById('lib-analyze-btn').addEventListener('click', () => switchView('analyze-view'));
 
-    let docHistory = JSON.parse(localStorage.getItem('docHistory')) || [];
+    let docHistory = [];
 
     const getReportText = (data) => {
       const clausesStr = (data.clauses || []).map(c => '- ' + c).join('\n');
@@ -570,56 +981,138 @@
         "RISKS & RED FLAGS:\n" + risksStr + "\n";
     };
 
-    function renderLibrary() {
+    // Google Calendar URL builder
+    function buildGCalURL(title, dueDate, description) {
+      const date = new Date(dueDate);
+      const pad = n => String(n).padStart(2, '0');
+      const dateStr = `${date.getFullYear()}${pad(date.getMonth()+1)}${pad(date.getDate())}`;
+      const nextDay = new Date(date);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const nextStr = `${nextDay.getFullYear()}${pad(nextDay.getMonth()+1)}${pad(nextDay.getDate())}`;
+      const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: `Deadline: ${title}`,
+        dates: `${dateStr}/${nextStr}`,
+        details: description || `Document deadline set via Aurora.ai. Title: ${title}`,
+        sf: 'true'
+      });
+      return `https://calendar.google.com/calendar/render?${params.toString()}`;
+    }
+
+
+    function renderLibrary(searchTerm = '', statusFilter = 'all', riskFilter = 'all') {
       const libGrid = document.getElementById('lib-grid');
       const emptyState = document.getElementById('empty-state');
       if (!libGrid) return;
+
+      // Read current filter values from dropdowns if not passed
+      if (!searchTerm) searchTerm = document.getElementById('lib-search')?.value || '';
+      if (statusFilter === 'all') statusFilter = document.getElementById('lib-status-filter')?.value || 'all';
+      if (riskFilter === 'all') riskFilter = document.getElementById('lib-risk-filter')?.value || 'all';
+      
+      let filteredDocs = docHistory;
+
+      // Text search filter
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filteredDocs = filteredDocs.filter(d => {
+          const searchable = [
+            d.title,
+            d.summary,
+            d.documentType,
+            ...(d.clauses || []),
+            ...(d.risks || [])
+          ].join(' ').toLowerCase();
+          return searchable.includes(term);
+        });
+      }
+
+      // Status filter
+      if (statusFilter !== 'all') {
+        filteredDocs = filteredDocs.filter(d => {
+          const hasDue = d.due_date && d.due_date !== 'null';
+          if (statusFilter === 'none') return !hasDue;
+          if (statusFilter === 'upcoming') return hasDue;
+          if (statusFilter === 'expired') {
+            if (!hasDue) return false;
+            return new Date(d.due_date) < new Date();
+          }
+          return true;
+        });
+      }
+
+      // Risk filter
+      if (riskFilter !== 'all') {
+        filteredDocs = filteredDocs.filter(d => {
+          const riskCount = (d.risks || []).length;
+          if (riskFilter === 'high') return riskCount > 2;
+          if (riskFilter === 'medium') return riskCount > 0 && riskCount <= 2;
+          if (riskFilter === 'low') return riskCount === 0;
+          return true;
+        });
+      }
+
       libGrid.innerHTML = '';
       
-      if (docHistory.length === 0) {
+      if (filteredDocs.length === 0) {
         if (emptyState) emptyState.classList.remove('hidden');
+        if (searchTerm) {
+           libGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-light);">No documents matched "${searchTerm}"</div>`;
+        }
       } else {
         if (emptyState) emptyState.classList.add('hidden');
-        docHistory.forEach((doc, idx) => {
-          let riskLevel = 'LOW RISK';
-          let riskClass = 'badge-low';
-          let riskPercent = Math.floor(Math.random() * 20); 
-  
-          if (doc.risks && doc.risks.length > 2) { riskLevel = 'HIGH RISK'; riskClass = 'badge-high'; riskPercent = 70 + Math.floor(Math.random() * 20); }
-          else if (doc.risks && doc.risks.length > 0) { riskLevel = 'MEDIUM RISK'; riskClass = 'badge-med'; riskPercent = 30 + Math.floor(Math.random() * 30); }
-          
-          const shortTitle = doc.title.length > 25 ? doc.title.substring(0, 25) + '...' : doc.title;
-          const shortSumm = doc.summary ? doc.summary.substring(0, 120) + '...' : 'No summary available.';
+        
+        // Group by category
+        const groups = {};
+        filteredDocs.forEach((doc, originalIdx) => {
+           // We need to find the REAL index in docHistory for viewDocument calls
+           const realIdx = docHistory.findIndex(h => h.id === doc.id);
+           const cat = doc.documentType || 'Unknown';
+           if (!groups[cat]) groups[cat] = [];
+           groups[cat].push({ doc, idx: realIdx });
+        });
 
-          const card = document.createElement('div');
-          card.className = 'lib-card';
-          card.innerHTML = `
-            <div class="lib-card-header">
-              <h4 title="${doc.title}">${shortTitle}</h4>
-              <span class="lib-badge ${riskClass}">${riskLevel}</span>
-            </div>
-            <div class="lib-status green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Completed</div>
-            <p class="lib-summary">${shortSumm}</p>
+        // Alphabetical sort of categories
+        Object.keys(groups).sort().forEach(category => {
+          const folderHeader = document.createElement('div');
+          folderHeader.className = 'folder-header';
+          folderHeader.style.cssText = "grid-column: 1 / -1; margin: 24px 0 12px; display: flex; align-items: center; gap: 10px; color: var(--text-main); font-weight: 700; font-size: 1.1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 8px;";
+          folderHeader.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; color:var(--primary);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> 📁 ${category} (${groups[category].length})`;
+          libGrid.appendChild(folderHeader);
+
+          groups[category].forEach(({ doc, idx }) => {
+            let riskLevel = 'LOW RISK';
+            let riskClass = 'badge-low';
+            let riskPercent = Math.floor(Math.random() * 20); 
+    
+            if (doc.risks && doc.risks.length > 2) { riskLevel = 'HIGH RISK'; riskClass = 'badge-high'; riskPercent = 70 + Math.floor(Math.random() * 20); }
+            else if (doc.risks && doc.risks.length > 0) { riskLevel = 'MEDIUM RISK'; riskClass = 'badge-med'; riskPercent = 30 + Math.floor(Math.random() * 30); }
             
-            
-            <div class="lib-meta">
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ${doc.date}</span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ${riskPercent}% risk</span>
-              ${doc.due_date && doc.due_date !== 'null' ? '<span style="color:#e69b00; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20m-7-7l7 7 7-7"/></svg> Due: ' + doc.due_date + '</span>' : ''}
-            </div>
-            
-            <div class="lib-tags">
-              <span class="tag tag-red">risk</span>
-              <span class="tag tag-green">legal</span>
-              <span class="tag tag-blue">insights</span>
-            </div>
-            
-            <div class="lib-actions">
-              <button class="lib-btn-view" onclick="viewDocument(${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View Results</button>
-              <button class="lib-btn-download" onclick="downloadDocumentIdx(${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
-            </div>
-          `;
-          libGrid.appendChild(card);
+            const shortTitle = doc.title.length > 25 ? doc.title.substring(0, 25) + '...' : doc.title;
+            const shortSumm = doc.summary ? doc.summary.substring(0, 120) + '...' : 'No summary available.';
+
+            const card = document.createElement('div');
+            card.className = 'lib-card';
+            card.innerHTML = `
+              <div class="lib-card-header">
+                <h4 title="${doc.title}">${shortTitle}</h4>
+                <span class="lib-badge ${riskClass}">${riskLevel}</span>
+              </div>
+              <div class="lib-status green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Completed</div>
+              <p class="lib-summary">${shortSumm}</p>
+              <div class="lib-meta">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ${doc.date}</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ${riskPercent}% risk</span>
+                ${doc.due_date && doc.due_date !== 'null' ? '<span style="color:#e69b00; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20m-7-7l7 7 7-7"/></svg> Due: ' + doc.due_date + '</span>' : ''}
+              </div>
+              <div class="lib-actions">
+                <button class="lib-btn-view" onclick="viewDocument(${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View Results</button>
+                <button class="lib-btn-download" onclick="downloadDocumentIdx(${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
+                ${doc.due_date && doc.due_date !== 'null' ? `<a href="${buildGCalURL(doc.title, doc.due_date, doc.summary)}" target="_blank" class="lib-btn-gcal" title="Add to Google Calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></a>` : ''}
+              </div>
+            `;
+            libGrid.appendChild(card);
+          });
         });
       }
       updateDashboardStats();
@@ -666,8 +1159,10 @@
       
       let totalTime = 0;
       docHistory.forEach(d => {
-        const t = parseFloat(d.processingTime.replace(' sec', ''));
-        if (!isNaN(t)) totalTime += t;
+        if (d.processingTime && typeof d.processingTime === 'string') {
+          const t = parseFloat(d.processingTime.replace(' sec', ''));
+          if (!isNaN(t)) totalTime += t;
+        }
       });
       const avgTime = total > 0 ? (totalTime / total).toFixed(1) : 0;
 
@@ -705,6 +1200,7 @@
             <div class="doc-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div>
             <div class="doc-item-details">
               <h4>${doc.title} <svg class="verified-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></h4>
+              <p style="font-size: 0.8rem; color: var(--text-light); margin: 4px 0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${doc.summary || 'Analysis complete'}</p>
               <div class="doc-meta">
                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ${doc.date}</span>
                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> ${rVal}% risk</span>
@@ -897,6 +1393,49 @@
     let isSpeaking = false;
     let speechUtterance = null;
 
+    function toggleBatchSpeech() {
+      const listenBtn = document.getElementById('batch-listen-btn');
+      if (!listenBtn || !lastBatchResults || lastBatchResults.length === 0) return;
+
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        stopBatchSpeechUI();
+        return;
+      }
+
+      const total = lastBatchResults.length;
+      const categories = {};
+      lastBatchResults.forEach(r => {
+        const cat = r.documentType || 'Unknown';
+        categories[cat] = (categories[cat] || 0) + 1;
+      });
+
+      const catSummary = Object.entries(categories)
+        .map(([cat, count]) => `${count} ${cat}`)
+        .join(', ');
+
+      const textToRead = `Batch processing complete. I have successfully analyzed ${total} documents. The batch includes ${catSummary}. All files have been organized into their respective folders.`;
+
+      speechUtterance = new SpeechSynthesisUtterance(textToRead);
+      speechUtterance.onstart = () => {
+        isSpeaking = true;
+        listenBtn.classList.add('speaking');
+        listenBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;"><rect x="6" y="6" width="12" height="12"></rect></svg> Stop Listening`;
+      };
+      speechUtterance.onend = stopBatchSpeechUI;
+      speechUtterance.onerror = stopBatchSpeechUI;
+
+      window.speechSynthesis.speak(speechUtterance);
+    }
+
+    function stopBatchSpeechUI() {
+      const listenBtn = document.getElementById('batch-listen-btn');
+      if (!listenBtn) return;
+      isSpeaking = false;
+      listenBtn.classList.remove('speaking');
+      listenBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg> Listen to Summary`;
+    }
+
     function toggleSpeech() {
       const listenBtn = document.getElementById('res-listen-btn');
       if (!listenBtn) return;
@@ -945,6 +1484,9 @@
       if (e.target.id === 'res-listen-btn' || e.target.closest('#res-listen-btn')) {
         toggleSpeech();
       }
+      if (e.target.id === 'batch-listen-btn' || e.target.closest('#batch-listen-btn')) {
+        toggleBatchSpeech();
+      }
     });
 
     // Initial load
@@ -952,11 +1494,88 @@
 
     let progressInterval = null;
 
-    async function handleUpload(file) {
+    async function handleBulkUpload(files) {
+      if (!files || files.length === 0) return;
+      const fileList = Array.from(files);
       const loading = document.getElementById('loading');
-      
-      document.getElementById('pm-filename').innerText = file.name;
       loading.classList.remove('hidden');
+      
+      const originalTitle = document.getElementById('pm-title').innerText;
+      const originalSubtitle = document.getElementById('pm-subtitle').innerText;
+
+      const batchResults = [];
+
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        const statusPrefix = fileList.length > 1 ? `(${i + 1}/${fileList.length}) ` : '';
+        
+        // Update PM text to show progress
+        document.getElementById('pm-title').innerText = statusPrefix + 'Analyzing Document';
+        document.getElementById('pm-subtitle').innerText = file.name;
+        
+        const res = await handleSingleUpload(file);
+        if (res) {
+          if (Array.isArray(res)) batchResults.push(...res);
+          else batchResults.push(res);
+        }
+      }
+      
+      // Cleanup UI
+      document.getElementById('pm-title').innerText = originalTitle;
+      document.getElementById('pm-subtitle').innerText = originalSubtitle;
+      loading.classList.add('hidden');
+
+      // Show Batch Summary if more than 1 document was processed
+      if (batchResults.length > 1) {
+        showBatchSummary(batchResults);
+      } else if (batchResults.length === 1) {
+        // If it was a single file, jump straight to its summary report
+        viewDocument(0);
+      }
+    }
+
+    let lastBatchResults = [];
+
+    function showBatchSummary(results) {
+      lastBatchResults = results;
+      const modal = document.getElementById('batch-results-modal');
+      const stats = document.getElementById('batch-stats-text');
+      const list = document.getElementById('batch-items-list');
+      
+      stats.innerText = `Successfully processed ${results.length} documents. Each has been categorized and stored in its respective folder.`;
+      list.innerHTML = '';
+      
+      results.forEach((res, index) => {
+        const item = document.createElement('div');
+        item.style.cssText = "background: #f8fafd; border-radius: 12px; padding: 16px; border: 1px solid var(--border-light); display: flex; gap: 16px; align-items: flex-start; text-align: left;";
+        
+        const riskLevel = (res.risks && res.risks.length > 2) ? 'High' : (res.risks && res.risks.length > 0) ? 'Med' : 'Low';
+        const riskClass = riskLevel === 'High' ? 'badge-high' : riskLevel === 'Med' ? 'badge-med' : 'badge-low';
+
+        item.innerHTML = `
+          <div style="width: 40px; height: 40px; background: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          </div>
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <h5 style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">${res.filename || 'Document'}</h5>
+              <span class="lib-badge ${riskClass}" style="font-size: 0.65rem; padding: 2px 8px;">${riskLevel} Risk</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-bottom: 6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              ${res.documentType || 'Uncategorized'}
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-light); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${res.summary || 'Analysis completed successfully.'}</p>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+      
+      modal.classList.remove('hidden');
+    }
+
+    async function handleSingleUpload(file) {
+      document.getElementById('pm-filename').innerText = file.name;
       
       const pmFill = document.getElementById('pm-fill');
       const pmPercent = document.getElementById('pm-percent');
@@ -973,9 +1592,6 @@
       document.getElementById('spinner-2').classList.add('hidden');
       document.getElementById('spinner-3').classList.add('hidden');
       
-      document.getElementById('pm-title').innerText = 'Extracting Text';
-      document.getElementById('pm-subtitle').innerText = 'Reading document content...';
-
       if (progressInterval) clearInterval(progressInterval);
       
       progressInterval = setInterval(() => {
@@ -987,9 +1603,6 @@
            
            document.getElementById('spinner-1').classList.add('hidden');
            document.getElementById('spinner-2').classList.remove('hidden');
-           
-           document.getElementById('pm-title').innerText = 'AI Analysis';
-           document.getElementById('pm-subtitle').innerText = 'Analyzing legal content and risks...';
            
            p += Math.random() * 2;
         }
@@ -1021,42 +1634,50 @@
           document.getElementById('spinner-2').classList.add('hidden');
           document.getElementById('spinner-3').classList.remove('hidden');
           
-          document.getElementById('pm-title').innerText = 'Analysis Complete';
-          document.getElementById('pm-subtitle').innerText = 'Ready for review!';
+          const processResults = Array.isArray(data) ? data : [data];
           
-          setTimeout(() => {
+          processResults.forEach(res => {
             const docEntry = {
-              id: Date.now(),
-              title: file.name,
-              documentType: data.documentType,
-              confidenceScore: data.confidenceScore,
-              processingTime: data.processingTime,
-              summary: data.summary,
-              clauses: data.clauses,
-              risks: data.risks,
-              due_date: data.due_date,
-              reminder_days: data.reminder_days,
+              id: Date.now() + Math.random(),
+              title: res.filename || file.name,
+              documentType: res.documentType,
+              confidenceScore: res.confidenceScore,
+              processingTime: res.processingTime,
+              summary: res.summary,
+              clauses: res.clauses,
+              risks: res.risks,
+              due_date: res.due_date,
+              reminder_days: res.reminder_days,
               date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             };
             docHistory.unshift(docEntry);
-            localStorage.setItem('docHistory', JSON.stringify(docHistory));
-            renderLibrary();
-  
-            viewDocument(0);
-          }, 800);
+          });
+          
+          localStorage.setItem(`docHistory_${currentUser.email}`, JSON.stringify(docHistory));
+          renderLibrary();
+          return data;
         } else {
           clearInterval(progressInterval);
+          console.error("Classification Error Details:", data);
           alert('Error: ' + (data.details || data.error));
-          loading.classList.add('hidden');
+          return null; // Return null to indicate error but allow loop to continue or exit
         }
       } catch (err) {
         clearInterval(progressInterval);
+        console.error("Connection/Upload Error:", err);
         alert('Upload failed. Is the server running?');
-        loading.classList.add('hidden');
+        return null;
       }
     }
 
 
+
+    // Search Input
+    document.getElementById('lib-search').addEventListener('input', () => renderLibrary());
+
+    // Status & Risk filter dropdowns
+    document.getElementById('lib-status-filter').addEventListener('change', () => renderLibrary());
+    document.getElementById('lib-risk-filter').addEventListener('change', () => renderLibrary());
 
     // --- Global Chat Logic ---
     function toggleGlobalChat() {
