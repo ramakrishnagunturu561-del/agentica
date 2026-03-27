@@ -55,7 +55,7 @@ export async function classifyRoute(fastify: FastifyInstance) {
                 
                 const category = result.documentType || 'Unknown';
                 logToProcess(`Categorized ${path.basename(fullPath)} as ${category}`);
-                const uploadsDir = path.join(process.cwd(), 'public', 'uploads', category);
+                const uploadsDir = path.join(process.cwd(), 'frontend', 'public', 'uploads', category);
                 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
                 
                 const finalPath = path.join(uploadsDir, path.basename(fullPath));
@@ -102,7 +102,7 @@ export async function classifyRoute(fastify: FastifyInstance) {
         
         const category = result.documentType || 'Unknown';
         logToProcess(`Categorized ${data.filename} as ${category}`);
-        const uploadsDir = path.join(process.cwd(), 'public', 'uploads', category);
+        const uploadsDir = path.join(process.cwd(), 'frontend', 'public', 'uploads', category);
         
         if (!fs.existsSync(uploadsDir)) {
           fs.mkdirSync(uploadsDir, { recursive: true });
@@ -115,7 +115,7 @@ export async function classifyRoute(fastify: FastifyInstance) {
       }
     } catch (error: any) {
       const logMsg = `[${new Date().toISOString()}] Classification Error: ${error.message}\n${error.stack}\n`;
-      fs.appendFileSync(path.join(process.cwd(), 'public', 'process.log'), logMsg);
+      fs.appendFileSync(path.join(process.cwd(), 'frontend', 'public', 'process.log'), logMsg);
       // Cleanup temp file on error if it still exists
       if (fs.existsSync(tempFilePath)) {
         try { await fs.promises.unlink(tempFilePath); } catch(e) {}
@@ -127,7 +127,7 @@ export async function classifyRoute(fastify: FastifyInstance) {
 
 function logToProcess(msg: string) {
   const fullMsg = `[${new Date().toISOString()}] ${msg}\n`;
-  fs.appendFileSync(path.join(process.cwd(), 'public', 'process.log'), fullMsg);
+  fs.appendFileSync(path.join(process.cwd(), 'frontend', 'public', 'process.log'), fullMsg);
   console.log(msg);
 }
 

@@ -3,14 +3,33 @@ import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import { classifyRoute } from './routes/classify.js';
 import { chatRoute } from './routes/chat.js';
+import { downloadRoute } from './routes/download.js';
+import { deleteRoute } from './routes/delete.js';
+import { authRoute } from './routes/auth.js';
+import { docsRoute } from './routes/docs.js';
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import mongoose from 'mongoose';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/aurora';
+
+console.log('--- Database Config ---');
+console.log('MONGODB_URI defined:', !!process.env.MONGODB_URI);
+console.log('Connecting to:', MONGODB_URI.replace(/\/\/.*@/, '//****@')); // Mask password if any
+console.log('-----------------------');
+
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB Successfully! (Data will now persist)'))
+  .catch(err => {
+    console.error('❌ MongoDB Connection ERROR:', err.message);
+    console.log('Is MongoDB running? Try opening MongoDB Compass and connecting to 127.0.0.1:27017');
+  });
 
 const server = Fastify({ logger: true });
 
@@ -19,7 +38,7 @@ server.register(multipart);
 
 // Serve static frontend files
 server.register(fastifyStatic, {
-  root: path.join(__dirname, '../public'),
+  root: path.join(__dirname, '../../frontend/public'),
   prefix: '/public/',
 });
 
@@ -35,6 +54,10 @@ server.register(classifyRoute);
 server.register(chatRoute);
 server.register(globalChatRoute);
 server.register(notifyRoute);
+server.register(downloadRoute);
+server.register(deleteRoute);
+server.register(authRoute);
+server.register(docsRoute);
 
 const start = async () => {
   try {
